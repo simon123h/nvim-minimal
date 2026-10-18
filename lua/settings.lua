@@ -67,3 +67,9 @@ opt.cmdheight = 1
 opt.pumblend = 10
 -- maximum number of entries in popup menu
 opt.pumheight = 10
+-- Smaller shada file (read at startup, written at exit)
+opt.shada = "'100,<50,s10,h"
+-- Do not search PATH for language providers at startup
+for _, provider in ipairs({ "python3", "node", "ruby", "perl" }) do
+	vim.g["loaded_" .. provider .. "_provider"] = 0
+end

@@ -8,7 +8,6 @@ end
 local ok, err = pcall(vim.pack.add, {
 	gh("folke/tokyonight.nvim"),
 	gh("nvim-mini/mini.nvim"), -- monolithic: one clone for all mini.* modules
-	gh("lewis6991/gitsigns.nvim"),
 	gh("jake-stewart/multicursor.nvim"),
 })
 if not ok then
@@ -24,6 +23,19 @@ local function setup(mod, opts)
 	return loaded and plugin or nil
 end
 
+-- Like setup(), but runs only once, on first use. Keeps rarely-used modules
+-- out of startup (fewer files to read). `after` runs once after a successful setup.
+local lazy = {}
+local function use(mod, opts, after)
+	if lazy[mod] == nil then
+		lazy[mod] = setup(mod, opts) or false
+		if lazy[mod] and after then
+			after(lazy[mod])
+		end
+	end
+	return lazy[mod] or nil
+end
+
 -- Colorscheme
 setup("tokyonight", {
 	style = "night",
@@ -34,6 +46,10 @@ setup("tokyonight", {
 if not pcall(vim.cmd.colorscheme, "tokyonight") then
 	vim.cmd.colorscheme("habamax")
 end
+
+--------------------------------------------------------------------------------
+-- Loaded at startup
+--------------------------------------------------------------------------------
 
 -- Editing helpers
 setup("mini.surround")
@@ -61,76 +77,85 @@ setup("mini.tabline", { show_icons = false })
 -- Highlight other occurrences of the word under the cursor
 setup("mini.cursorword")
 
+--------------------------------------------------------------------------------
+-- Loaded on first use
+--------------------------------------------------------------------------------
+
+local set = vim.keymap.set
+
 -- File explorer
-local files = setup("mini.files")
-if files then
-	vim.keymap.set("n", "-", function()
-		local name = vim.api.nvim_buf_get_name(0)
-		if not files.close() then
-			-- open at the current file; fall back to cwd for unnamed/missing paths
-			files.open(vim.uv.fs_stat(name) and name or nil)
-		end
-	end, { desc = "Edit parent directory" })
+set("n", "-", function()
+	local files = use("mini.files")
+	if not files then
+		return
+	end
+	local name = vim.api.nvim_buf_get_name(0)
+	if not files.close() then
+		-- open at the current file; fall back to cwd for unnamed/missing paths
+		files.open(vim.uv.fs_stat(name) and name or nil)
+	end
+end, { desc = "Edit parent directory" })
 
-	-- Buffer-local <Esc> closes the explorer (overrides the global multicursor <Esc>)
-	vim.api.nvim_create_autocmd("User", {
-		pattern = "MiniFilesBufferCreate",
-		callback = function(args)
-			vim.keymap.set("n", "<Esc>", files.close, { buffer = args.data.buf_id, desc = "Close explorer" })
-		end,
-	})
-end
-
--- File / buffer picker
-local pick = setup("mini.pick")
-if pick then
-	vim.ui.select = pick.ui_select
-	vim.keymap.set("n", "<C-p>", pick.builtin.files, { desc = "Find files" })
-	vim.keymap.set("n", "<leader>b", pick.builtin.buffers, { desc = "Find open buffer" })
-end
-
--- Extra pickers
-local extra = setup("mini.extra")
-if extra and pick then
-	local pickers = extra.pickers
-	vim.keymap.set("n", "<leader>p", pickers.commands, { desc = "Command Palette" })
-	vim.keymap.set("n", "<leader>k", pickers.keymaps, { desc = "Keymaps Palette" })
-	vim.keymap.set("n", "<leader>r", pickers.registers, { desc = "Show registers" })
-	vim.keymap.set("n", "<C-f>", function()
-		pickers.buf_lines({ scope = "current" })
-	end, { desc = "Fuzzy find in current file" })
-end
-
--- Git
-local gitsigns = setup("gitsigns", {
-	current_line_blame_opts = { virt_text_pos = "eol" },
-	current_line_blame_formatter = " <author_time:%R>, <author_time:%d.%m.%y>",
+-- Buffer-local <Esc> closes the explorer (overrides the global multicursor <Esc>)
+vim.api.nvim_create_autocmd("User", {
+	pattern = "MiniFilesBufferCreate",
+	callback = function(args)
+		set("n", "<Esc>", function() require("mini.files").close() end, { buffer = args.data.buf_id, desc = "Close explorer" })
+	end,
 })
-if gitsigns then
-	vim.keymap.set("n", "gö", function() gitsigns.nav_hunk("prev") end, { desc = "Previous git change" })
-	vim.keymap.set("n", "gä", function() gitsigns.nav_hunk("next") end, { desc = "Next git change" })
-	vim.keymap.set("n", "gB", gitsigns.toggle_current_line_blame, { desc = "Toggle git blame" })
+
+-- Pickers (mini.extra needs mini.pick set up first)
+local function pick()
+	return use("mini.pick")
 end
+local function extra_picker(name, opts)
+	return function()
+		if pick() and use("mini.extra") then
+			MiniExtra.pickers[name](opts)
+		end
+	end
+end
+
+local native_select = vim.ui.select
+vim.ui.select = function(...)
+	local p = pick()
+	return (p and p.ui_select or native_select)(...)
+end
+
+set("n", "<C-p>", function() if pick() then MiniPick.builtin.files() end end, { desc = "Find files" })
+set("n", "<leader>b", function() if pick() then MiniPick.builtin.buffers() end end, { desc = "Find open buffer" })
+set("n", "<leader>p", extra_picker("commands"), { desc = "Command Palette" })
+set("n", "<leader>k", extra_picker("keymaps"), { desc = "Keymaps Palette" })
+set("n", "<leader>r", extra_picker("registers"), { desc = "Show registers" })
+set("n", "<C-f>", extra_picker("buf_lines", { scope = "current" }), { desc = "Fuzzy find in current file" })
 
 -- Multicursor
-local mc = setup("multicursor-nvim")
-if mc then
-	local set = vim.keymap.set
-	set({ "n", "v" }, "<M-Up>", function() mc.lineAddCursor(-1) end, { desc = "Add cursor above" })
-	set({ "n", "v" }, "<M-Down>", function() mc.lineAddCursor(1) end, { desc = "Add cursor below" })
-	set({ "n", "v" }, "<M-Right>", mc.nextCursor, { desc = "Next cursor" })
-	set({ "n", "v" }, "<M-Left>", mc.prevCursor, { desc = "Previous cursor" })
-	set("v", "<C-d>", function() mc.matchAddCursor(1) end, { desc = "Add cursor to next match" })
-	set({ "n", "v" }, "<C-k><C-d>", function() mc.matchSkipCursor(1) end, { desc = "Skip next match" })
-	set("n", "<C-LeftMouse>", mc.handleMouse, { desc = "Add/remove cursor with mouse" })
-	set({ "n", "v" }, "<C-q>", mc.toggleCursor, { desc = "Toggle cursor" })
-	set("n", "<Esc>", function()
-		if not mc.cursorsEnabled() then
-			mc.enableCursors()
-		elseif mc.hasCursors() then
-			mc.clearCursors()
-		else
-			vim.cmd("noh")
+local function mc_call(method, ...)
+	local args = { ... }
+	return function()
+		local mc = use("multicursor-nvim", nil, function(mc)
+			-- Custom <Esc> that only takes over once multicursor is loaded
+			set("n", "<Esc>", function()
+				if not mc.cursorsEnabled() then
+					mc.enableCursors()
+				elseif mc.hasCursors() then
+					mc.clearCursors()
+				else
+					vim.cmd("noh")
+				end
+			end, { desc = "Clear cursors or search highlight" })
+		end)
+		if mc then
+			mc[method](unpack(args))
 		end
-	end, { desc = "Clear cursors or search highlight" })
+	end
 end
+
+set({ "n", "v" }, "<M-Up>", mc_call("lineAddCursor", -1), { desc = "Add cursor above" })
+set({ "n", "v" }, "<M-Down>", mc_call("lineAddCursor", 1), { desc = "Add cursor below" })
+set({ "n", "v" }, "<M-Right>", mc_call("nextCursor"), { desc = "Next cursor" })
+set({ "n", "v" }, "<M-Left>", mc_call("prevCursor"), { desc = "Previous cursor" })
+set("v", "<C-d>", mc_call("matchAddCursor", 1), { desc = "Add cursor to next match" })
+set({ "n", "v" }, "<C-k><C-d>", mc_call("matchSkipCursor", 1), { desc = "Skip next match" })
+set("n", "<C-LeftMouse>", mc_call("handleMouse"), { desc = "Add/remove cursor with mouse" })
+set({ "n", "v" }, "<C-q>", mc_call("toggleCursor"), { desc = "Toggle cursor" })

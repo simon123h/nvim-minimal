@@ -1,3 +1,5 @@
+vim.loader.enable() -- cache compiled Lua modules
+
 require("settings")
 require("autocmds")
 require("mappings")
