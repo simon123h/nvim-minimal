@@ -12,6 +12,9 @@ local ok, err = pcall(vim.pack.add, {
 	gh("nvim-mini/mini.pairs"),
 	gh("nvim-mini/mini.pick"),
 	gh("nvim-mini/mini.statusline"),
+	gh("nvim-mini/mini.tabline"),
+	gh("nvim-mini/mini.files"),
+	gh("nvim-mini/mini.cursorword"),
 	gh("lewis6991/gitsigns.nvim"),
 	gh("jake-stewart/multicursor.nvim"),
 })
@@ -58,6 +61,24 @@ setup("mini.move", {
 -- Status line (plain text, no icons)
 setup("mini.statusline", { use_icons = false })
 vim.opt.showmode = false -- the status line shows the mode
+
+-- Buffer tabs (plain text, no icons)
+setup("mini.tabline", { show_icons = false })
+
+-- Highlight other occurrences of the word under the cursor
+setup("mini.cursorword")
+
+-- File explorer
+local files = setup("mini.files")
+if files then
+	vim.keymap.set("n", "-", function()
+		local name = vim.api.nvim_buf_get_name(0)
+		if not files.close() then
+			-- open at the current file; fall back to cwd for unnamed/missing paths
+			files.open(vim.uv.fs_stat(name) and name or nil)
+		end
+	end, { desc = "Edit parent directory" })
+end
 
 -- File / buffer picker
 local pick = setup("mini.pick")
