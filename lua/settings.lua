@@ -60,8 +60,6 @@ opt.swapfile = false
 opt.completeopt = "menuone,noselect"
 -- decrease update time (default is 4000ms) for faster UI response
 opt.updatetime = 250
--- use bash (instead of fish) for performance reasons
-opt.shell = "/bin/bash"
 -- use lazy redraw (optimizes performance)
 -- opt.lazyredraw = true
 -- use the system clipboard
@@ -77,5 +75,3 @@ opt.cmdheight = 1
 opt.pumblend = 10
 -- maximum number of entries in popup menu
 opt.pumheight = 10
--- Set the shell to the system current shell
-vim.opt.shell = os.getenv("SHELL")

@@ -13,21 +13,12 @@ set({ "i", "v" }, "jk", "<Esc>", { desc = "Escape mode" })
 set({ "i", "v" }, "kj", "<Esc>", { desc = "Escape mode" })
 set({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear search highlight" })
 
--- Treesitter node selection (built-in `an` / `in`)
-set("n", "<CR>", "van", { remap = true, desc = "Select treesitter node" })
-set("x", "<CR>", "an", { remap = true, desc = "Expand selection" })
-
 -- Save and Quit
 set("n", "<C-d>", "viw", { desc = "Select word" })
 set("n", "<C-s>", "<cmd>update<cr>", { desc = "Save file" })
 set({ "v", "i" }, "<C-s>", "<Esc><cmd>update<cr>", { desc = "Save file" })
 set("n", "<leader>s", "<cmd>update<cr>", { desc = "Save file" })
 set("n", "<leader>q", "<cmd>q<cr>", { desc = "Close current window" })
-
--- Buffer management
-set("n", "<leader>w", function()
-	Snacks.bufdelete()
-end, { desc = "Close current buffer without closing window" })
 
 -- Line numbers toggle
 set("n", "<F4>", function()
@@ -37,17 +28,18 @@ set("n", "<F4>", function()
 	end
 end, { desc = "Toggle line numbers (Normal/Relative/None)" })
 
--- Run current file
-set("n", "<F5>", function()
-	Snacks.terminal.open('"./' .. vim.fn.expand("%:t") .. '"', { cwd = vim.fn.expand("%:p:h"), auto_close = false })
-end, { desc = "Run current file in terminal" })
+-- Close buffer without closing the window
+set("n", "<leader>w", function()
+	local buf = vim.api.nvim_get_current_buf()
+	if #vim.fn.getbufinfo({ buflisted = 1 }) > 1 then
+		vim.cmd("bprevious")
+	else
+		vim.cmd("enew")
+	end
+	pcall(vim.cmd.bdelete, buf)
+end, { desc = "Close current buffer without closing window" })
 
-set("n", "<leader><F5>", '<cmd>!cd "%:p:h"; chmod +x "%:t"; "./%:t"<cr>', { desc = "Make executable and run" })
-
--- System interaction
-set("n", "<leader>p", function() Snacks.picker.commands() end, { desc = "Command Palette" })
-set("n", "<leader>k", function() Snacks.picker.keymaps() end, { desc = "Keymaps Palette" })
-set("n", "<F1>", function() Snacks.picker.commands() end, { desc = "Command Palette" })
+set("n", "<leader>r", "<cmd>registers<cr>", { desc = "Show registers" })
 set("i", "<C-z>", "<C-o><C-z>", { desc = "Suspend Neovim from insert mode" })
 set("n", "Q", "<nop>", { desc = "Disable Ex mode" })
 
@@ -171,15 +163,8 @@ set({ "n", "v" }, "<leader>m", 'V"0x<C-w><C-w>"0p<C-w><C-p>', { desc = "Move lin
 -- Git & Terminal
 --------------------------------------------------------------------------------
 
--- Git
-set("n", "<leader>g", function()
-	Snacks.lazygit.open()
-end, { desc = "Open lazygit" })
-
 -- Terminal
-set("n", "<leader>t", function()
-	Snacks.terminal.toggle()
-end, { desc = "Toggle terminal" })
+set("n", "<leader>t", "<cmd>botright split | terminal<cr>", { desc = "Open terminal" })
 
 -- Terminal mode mappings
 set("t", "jk", "<C-\\><C-n>", { desc = "Escape terminal mode" })
@@ -191,46 +176,23 @@ set("t", "<C-k>", "<C-\\><C-n><C-w><up>", { desc = "Terminal move up" })
 set("t", "<C-l>", "<C-\\><C-n><C-w><right>", { desc = "Terminal move right" })
 
 --------------------------------------------------------------------------------
--- LSP & Plugins
---------------------------------------------------------------------------------
-
--- LSP
-set("n", "<leader>ff", function()
-	require("conform").format({ async = true, lsp_fallback = true })
-end, { desc = "Format buffer" })
-set("n", "<leader>lö", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Previous diagnostic" })
-set("n", "<leader>lä", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Next diagnostic" })
-set("n", "<leader>la", vim.lsp.buf.code_action, { desc = "Code action" })
-set("n", "<leader>lh", vim.lsp.buf.hover, { desc = "LSP hover" })
-set("n", "<leader>lc", vim.lsp.buf.rename, { desc = "LSP rename" })
-set("n", "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Document symbols" })
-set("n", "gd", "<cmd>Telescope lsp_definitions<cr>", { desc = "Go to definition" })
-set("n", "<leader>lr", "<cmd>Telescope lsp_references<cr>", { desc = "LSP references" })
-set("n", "<leader>li", "<cmd>Mason<cr>", { desc = "Open Mason" })
-set("n", "<leader>ll", "<cmd>Lazy<cr>", { desc = "Open Lazy" })
-set("n", "<leader>u", "<cmd>Lazy sync<cr>", { desc = "Update packages" })
-
---------------------------------------------------------------------------------
 -- Config Management
 --------------------------------------------------------------------------------
 
 -- Open or reload vim config
 set("n", "<leader>,", function()
-	vim.cmd("if @% == '' | lcd ~/.config/nvim | end")
-	vim.cmd("args ~/.config/nvim/init.lua ~/.config/nvim/lua/*.lua")
-end, { desc = "Open Neovim configuration files" })
+	vim.cmd.edit(vim.fn.stdpath("config") .. "/init.lua")
+end, { desc = "Open Neovim configuration" })
 
 set("n", "<leader>.", function()
-	local files = { "autocmds", "mappings", "settings", "lazy-init" }
-	for _, name in ipairs(files) do
-		package.loaded[name] = nil
-	end
 	dofile(vim.env.MYVIMRC)
 	vim.notify("Config reloaded.")
 end, { desc = "Reload Neovim configuration" })
 
+set("n", "<leader>u", function() vim.pack.update() end, { desc = "Update plugins" })
+
 -- Colorscheme toggle
-local themes = { "tokyonight-night", "tokyonight-day", "onedark" }
+local themes = { "tokyonight-night", "tokyonight-day" }
 local theme_n = 1
 set("n", "<leader>c", function()
 	theme_n = theme_n % #themes + 1

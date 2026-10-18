@@ -1,0 +1,32 @@
+{
+  "plugins": {
+    "gitsigns.nvim": {
+      "rev": "fd780920613e541cbdfac41bf711583ed49f9249",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "mini.move": {
+      "rev": "57435a0f6654c232405424a78424bb3edbedfa7c",
+      "src": "https://github.com/nvim-mini/mini.move"
+    },
+    "mini.pairs": {
+      "rev": "03eb1f0062a2cee5314d1ac3939246e4bb21352e",
+      "src": "https://github.com/nvim-mini/mini.pairs"
+    },
+    "mini.pick": {
+      "rev": "7cb8fd34bde460986e5e39e9539a9f992ec9772e",
+      "src": "https://github.com/nvim-mini/mini.pick"
+    },
+    "mini.surround": {
+      "rev": "59ce0acf79e1d930756ef3a7cb4c2369560cf548",
+      "src": "https://github.com/nvim-mini/mini.surround"
+    },
+    "multicursor.nvim": {
+      "rev": "c574bfc1f7e63dfea3e64b8453c9f7c660127238",
+      "src": "https://github.com/jake-stewart/multicursor.nvim"
+    },
+    "tokyonight.nvim": {
+      "rev": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    }
+  }
+}
