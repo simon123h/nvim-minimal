@@ -75,7 +75,7 @@ setup("mini.statusline", {
 		active = function()
 			local sl = MiniStatusline
 			local mode, mode_hl = sl.section_mode({ trunc_width = 120 })
-			local location = sl.is_truncated(75) and "Ln %l, Col %v" or "Ln %l/%L, Col %v"
+			local location = sl.is_truncated(75) and "Ln %3l, Col %3v" or "Ln %3l/%L, Col %3v" -- padded: no jumping
 			return sl.combine_groups({
 				{ hl = mode_hl, strings = { mode } },
 				"%<",
