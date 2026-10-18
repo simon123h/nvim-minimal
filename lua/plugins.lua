@@ -96,6 +96,11 @@ set("n", "-", function()
 	end
 end, { desc = "Edit parent directory" })
 
+-- Starting on a directory (`nvim .`): set mini.files up now so it replaces netrw
+if vim.fn.argc() > 0 and vim.fn.isdirectory(vim.fn.argv(0)) == 1 then
+	use("mini.files")
+end
+
 -- Buffer-local <Esc> closes the explorer (overrides the global multicursor <Esc>)
 vim.api.nvim_create_autocmd("User", {
 	pattern = "MiniFilesBufferCreate",
