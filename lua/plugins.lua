@@ -68,7 +68,25 @@ setup("mini.move", {
 })
 
 -- Status line (plain text, no icons)
-setup("mini.statusline", { use_icons = false })
+setup("mini.statusline", {
+	use_icons = false,
+	content = {
+		-- Default layout minus the git/diff/diagnostics/lsp sections (nothing feeds them here)
+		active = function()
+			local sl = MiniStatusline
+			local mode, mode_hl = sl.section_mode({ trunc_width = 120 })
+			local location = sl.is_truncated(75) and "Ln %l, Col %v" or "Ln %l/%L, Col %v"
+			return sl.combine_groups({
+				{ hl = mode_hl, strings = { mode } },
+				"%<",
+				{ hl = "MiniStatuslineFilename", strings = { sl.section_filename({ trunc_width = 140 }) } },
+				"%=",
+				{ hl = "MiniStatuslineFileinfo", strings = { sl.section_fileinfo({ trunc_width = 120 }) } },
+				{ hl = mode_hl, strings = { sl.section_searchcount({ trunc_width = 75 }), location } },
+			})
+		end,
+	},
+})
 vim.opt.showmode = false -- the status line shows the mode
 
 -- Buffer tabs (plain text, no icons)
