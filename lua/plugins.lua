@@ -11,6 +11,7 @@ local ok, err = pcall(vim.pack.add, {
 	gh("nvim-mini/mini.move"),
 	gh("nvim-mini/mini.pairs"),
 	gh("nvim-mini/mini.pick"),
+	gh("nvim-mini/mini.statusline"),
 	gh("lewis6991/gitsigns.nvim"),
 	gh("jake-stewart/multicursor.nvim"),
 })
@@ -53,6 +54,10 @@ setup("mini.move", {
 		line_up = "<C-Up>",
 	},
 })
+
+-- Status line (plain text, no icons)
+setup("mini.statusline", { use_icons = false })
+vim.opt.showmode = false -- the status line shows the mode
 
 -- File / buffer picker
 local pick = setup("mini.pick")
