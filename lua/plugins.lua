@@ -95,6 +95,13 @@ setup("mini.tabline", { show_icons = false })
 -- Highlight other occurrences of the word under the cursor
 setup("mini.cursorword")
 
+-- Git gutter. Runs `git` twice per buffer (find the repo, read the index version);
+-- the diff itself is computed in-process.
+setup("mini.diff", {
+	view = { style = "sign" },
+	mappings = { goto_prev = "gö", goto_next = "gä" },
+})
+
 --------------------------------------------------------------------------------
 -- Loaded on first use
 --------------------------------------------------------------------------------
