@@ -78,6 +78,14 @@ if files then
 			files.open(vim.uv.fs_stat(name) and name or nil)
 		end
 	end, { desc = "Edit parent directory" })
+
+	-- Buffer-local <Esc> closes the explorer (overrides the global multicursor <Esc>)
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "MiniFilesBufferCreate",
+		callback = function(args)
+			vim.keymap.set("n", "<Esc>", files.close, { buffer = args.data.buf_id, desc = "Close explorer" })
+		end,
+	})
 end
 
 -- File / buffer picker
