@@ -186,8 +186,10 @@ set("t", "<C-l>", "<C-\\><C-n><C-w><right>", { desc = "Terminal move right" })
 
 -- Open or reload vim config
 set("n", "<leader>,", function()
-	vim.cmd.edit(vim.fn.stdpath("config") .. "/init.lua")
-end, { desc = "Open Neovim configuration" })
+	local dir = vim.fn.stdpath("config")
+	local files = vim.list_extend({ dir .. "/init.lua" }, vim.fn.glob(dir .. "/lua/*.lua", false, true))
+	vim.cmd("args " .. table.concat(vim.tbl_map(vim.fn.fnameescape, files), " "))
+end, { desc = "Open Neovim configuration files" })
 
 set("n", "<leader>.", function()
 	dofile(vim.env.MYVIMRC)
