@@ -39,7 +39,6 @@ set("n", "<leader>w", function()
 	pcall(vim.cmd.bdelete, buf)
 end, { desc = "Close current buffer without closing window" })
 
-set("n", "<leader>r", "<cmd>registers<cr>", { desc = "Show registers" })
 set("i", "<C-z>", "<C-o><C-z>", { desc = "Suspend Neovim from insert mode" })
 set("n", "Q", "<nop>", { desc = "Disable Ex mode" })
 

@@ -4,37 +4,9 @@
       "rev": "fd780920613e541cbdfac41bf711583ed49f9249",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
-    "mini.cursorword": {
-      "rev": "643e21d31210d1293ba70d60e7edc45dfcca518e",
-      "src": "https://github.com/nvim-mini/mini.cursorword"
-    },
-    "mini.files": {
-      "rev": "3fe8e33d37a8c455762800c39bab9af317dd53b4",
-      "src": "https://github.com/nvim-mini/mini.files"
-    },
-    "mini.move": {
-      "rev": "57435a0f6654c232405424a78424bb3edbedfa7c",
-      "src": "https://github.com/nvim-mini/mini.move"
-    },
-    "mini.pairs": {
-      "rev": "03eb1f0062a2cee5314d1ac3939246e4bb21352e",
-      "src": "https://github.com/nvim-mini/mini.pairs"
-    },
-    "mini.pick": {
-      "rev": "7cb8fd34bde460986e5e39e9539a9f992ec9772e",
-      "src": "https://github.com/nvim-mini/mini.pick"
-    },
-    "mini.statusline": {
-      "rev": "d7133a9a244a8d93ccee42ff37fb9499af5956fb",
-      "src": "https://github.com/nvim-mini/mini.statusline"
-    },
-    "mini.surround": {
-      "rev": "59ce0acf79e1d930756ef3a7cb4c2369560cf548",
-      "src": "https://github.com/nvim-mini/mini.surround"
-    },
-    "mini.tabline": {
-      "rev": "3dd8686c15e3cfb1bfbc4abfecf699326f1de4c0",
-      "src": "https://github.com/nvim-mini/mini.tabline"
+    "mini.nvim": {
+      "rev": "66b9e643b6dabe15079be7197ee4b4d59ff98c61",
+      "src": "https://github.com/nvim-mini/mini.nvim"
     },
     "multicursor.nvim": {
       "rev": "c574bfc1f7e63dfea3e64b8453c9f7c660127238",

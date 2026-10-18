@@ -7,14 +7,7 @@ end
 
 local ok, err = pcall(vim.pack.add, {
 	gh("folke/tokyonight.nvim"),
-	gh("nvim-mini/mini.surround"),
-	gh("nvim-mini/mini.move"),
-	gh("nvim-mini/mini.pairs"),
-	gh("nvim-mini/mini.pick"),
-	gh("nvim-mini/mini.statusline"),
-	gh("nvim-mini/mini.tabline"),
-	gh("nvim-mini/mini.files"),
-	gh("nvim-mini/mini.cursorword"),
+	gh("nvim-mini/mini.nvim"), -- monolithic: one clone for all mini.* modules
 	gh("lewis6991/gitsigns.nvim"),
 	gh("jake-stewart/multicursor.nvim"),
 })
@@ -94,6 +87,18 @@ if pick then
 	vim.ui.select = pick.ui_select
 	vim.keymap.set("n", "<C-p>", pick.builtin.files, { desc = "Find files" })
 	vim.keymap.set("n", "<leader>b", pick.builtin.buffers, { desc = "Find open buffer" })
+end
+
+-- Extra pickers
+local extra = setup("mini.extra")
+if extra and pick then
+	local pickers = extra.pickers
+	vim.keymap.set("n", "<leader>p", pickers.commands, { desc = "Command Palette" })
+	vim.keymap.set("n", "<leader>k", pickers.keymaps, { desc = "Keymaps Palette" })
+	vim.keymap.set("n", "<leader>r", pickers.registers, { desc = "Show registers" })
+	vim.keymap.set("n", "<C-f>", function()
+		pickers.buf_lines({ scope = "current" })
+	end, { desc = "Fuzzy find in current file" })
 end
 
 -- Git
