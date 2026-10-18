@@ -104,9 +104,6 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufWipeout", "TabNew", "Ta
 	callback = function() vim.schedule(update_tabline) end,
 })
 update_tabline()
-
--- Make the current buffer stand out from buffers merely visible in other splits
-local function tabline_highlights()
 	local sel = vim.api.nvim_get_hl(0, { name = "TabLineSel", link = false })
 	vim.api.nvim_set_hl(0, "MiniTablineCurrent", vim.tbl_extend("force", sel, { bold = true, underline = true }))
 end
