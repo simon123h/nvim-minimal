@@ -1,0 +1,18 @@
+stages:
+  - validate
+
+variables:
+  SELENE_VERSION: "0.27.1"
+
+# --- Validation Stage ---
+
+nvim-headless-check:
+  stage: validate
+  image: alpine:edge
+  before_script:
+    - apk add --no-cache neovim git bash curl gcompat
+    - mkdir -p ~/.config
+    - ln -s "$(pwd)" ~/.config/nvim
+  script:
+    # Run headless sync and check for errors in the output
+    - nvim --headless "+Lazy! sync" +qa
