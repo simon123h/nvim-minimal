@@ -93,18 +93,6 @@ vim.opt.showmode = false -- the status line shows the mode
 -- Buffer tabs (plain text, no icons)
 setup("mini.tabline", { show_icons = false })
 
--- Only show the tabline when there is something to switch between (mini.tabline forces it on)
-local function update_tabline()
-	local multiple = #vim.fn.getbufinfo({ buflisted = 1 }) > 1 or #vim.api.nvim_list_tabpages() > 1
-	vim.o.showtabline = multiple and 2 or 0
-end
-vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufWipeout", "TabNew", "TabClosed", "VimEnter" }, {
-	group = vim.api.nvim_create_augroup("my_conf_tabline", { clear = true }),
-	-- deletion events fire before the buffer leaves the list, so check afterwards
-	callback = function() vim.schedule(update_tabline) end,
-})
-update_tabline()
-
 -- Highlight other occurrences of the word under the cursor
 setup("mini.cursorword")
 
