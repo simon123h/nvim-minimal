@@ -71,13 +71,14 @@ setup("mini.move", {
 setup("mini.statusline", {
 	use_icons = false,
 	content = {
-		-- Default layout minus the git/diff/diagnostics/lsp sections (nothing feeds them here)
+		-- Default layout minus the git/diagnostics/lsp sections (nothing feeds them here); diff comes from mini.diff
 		active = function()
 			local sl = MiniStatusline
 			local mode, mode_hl = sl.section_mode({ trunc_width = 120 })
 			local location = sl.is_truncated(75) and "%p%% %2l:%v" or "%3p%% %3l:%v"
 			return sl.combine_groups({
 				{ hl = mode_hl, strings = { mode } },
+				{ hl = "MiniStatuslineDevinfo", strings = { sl.section_diff({ trunc_width = 75 }) } },
 				"%<",
 				{ hl = "MiniStatuslineFilename", strings = { sl.section_filename({ trunc_width = 140 }) } },
 				"%=",
