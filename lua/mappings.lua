@@ -166,6 +166,12 @@ set({ "n", "v" }, "<leader>m", 'V"0x<C-w><C-w>"0p<C-w><C-p>', { desc = "Move lin
 -- Terminal
 set("n", "<leader>t", "<cmd>botright split | terminal<cr>", { desc = "Open terminal" })
 
+-- Window navigation
+set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+set("n", "<C-j>", "<C-w>j", { desc = "Move to lower window" })
+set("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
+set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+
 -- Terminal mode mappings
 set("t", "jk", "<C-\\><C-n>", { desc = "Escape terminal mode" })
 set("t", "kj", "<C-\\><C-n>", { desc = "Escape terminal mode" })

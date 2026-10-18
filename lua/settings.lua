@@ -10,8 +10,6 @@ opt.mouse = "a"
 opt.number = true
 -- Always display signcolumn used for errors and git-gutter
 opt.signcolumn = "yes"
--- Do not show mode in the last line (showed in status line anyways)
-opt.showmode = false
 -- Highlight current line
 opt.cursorline = true
 -- Command-line completion mode
@@ -20,8 +18,6 @@ opt.wildmode = "list:longest,full"
 opt.wrap = true
 -- do not break words when wrapping the line
 opt.linebreak = true
--- Always use spaces instead of tabs
--- opt.expandtab = false
 -- Number of spaces tabs count for
 opt.shiftwidth = 4
 -- Number of spaces tabs count for
@@ -60,10 +56,6 @@ opt.swapfile = false
 opt.completeopt = "menuone,noselect"
 -- decrease update time (default is 4000ms) for faster UI response
 opt.updatetime = 250
--- use lazy redraw (optimizes performance)
--- opt.lazyredraw = true
--- use the system clipboard
--- opt.clipboard = "unnamedplus"
 -- true color support
 opt.termguicolors = true
 -- disable the startup screen
