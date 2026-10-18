@@ -6,7 +6,8 @@ end
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = augroup("highlight_yank"),
 	callback = function()
-		vim.hl.on_yank()
+		-- hl_op replaces the deprecated on_yank in newer Neovim; fall back for 0.12
+		(vim.hl.hl_op or vim.hl.on_yank)()
 	end,
 })
 
